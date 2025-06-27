@@ -134,9 +134,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       toast.success("Login successful!");
+      toast.success(data.success);
 
       // Return the result so LoginPage can access it
-      return data;
+      return data.success;
     } catch (error) {
       console.error("Telegram OAuth error:", error);
       toast.error("Authentication failed. Please try again.");

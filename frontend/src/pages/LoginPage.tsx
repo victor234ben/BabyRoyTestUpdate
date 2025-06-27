@@ -38,20 +38,22 @@ const LoginPage = () => {
           user.username || ""
         );
 
-        if (result.success) {
+        toast.info("reached");
+
+        if (result) {
           toast.info("✅ Auth successful, navigating...");
 
           // Small delay to ensure React state updates are processed
           setTimeout(() => {
-            navigate(from, { replace: true });
+            navigate("/dashboard");
           }, 100);
         } else {
-          toast("Authentication failed. Please try again.");
+          toast("Authentication failed. Please try again first.");
         }
       } catch (error) {
         console.error("Telegram OAuth failed:", error);
         setError(true);
-        toast("Authentication failed. Please try again.");
+        toast("Authentication failed. Please try again 2nd.");
       } finally {
         setIsLoading(false);
       }

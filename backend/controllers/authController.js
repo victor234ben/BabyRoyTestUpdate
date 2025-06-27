@@ -225,94 +225,15 @@ const sessionBasedAuth = async (req, res) => {
 // to do tier one, tier two 1-50 1000 point 50+ 5000points per referrals
 // Update your existing telegramLoginAndSignup to handle both session and telegram auth
 const telegramLoginAndSignup = async (req, res) => {
-  const { telegramId, first_name, last_name, username, sessionToken, initData } = req.body;
+  console.log("called")
+  const { telegramId, first_name, last_name, username, sessionToken } = req.body;
 
+  console.log(telegramId, first_name, last_name, username, sessionToken)
   try {
-    // If session token is provided, use session-based auth
-    if (sessionToken) {
-      return await sessionBasedAuth(req, res);
-    }
-
-    // Validate init data if provided (recommended approach)
-    if (initData) {
-      try {
-        // Validate the init data against your bot token
-        validate(initData, process.env.TELEGRAM_BOT_TOKEN);
-
-        // Parse the validated init data
-        const parsedData = parse(initData);
-
-        console.log('✅ Init data validated successfully');
-        console.log('Parsed user data:', parsedData.user);
-
-        // Use the validated data
-        const validatedUser = parsedData.user;
-
-        if (!validatedUser || !validatedUser.id) {
-          return res.status(400).json({
-            success: false,
-            message: "Invalid user data in init data",
-            error: "INVALID_USER_DATA"
-          });
-        }
-
-        // Find existing user using validated telegram ID
-        const user = await User.findOne({ telegramId: validatedUser.id });
-
-        if (!user) {
-          console.log(`❌ User not found for telegramId: ${validatedUser.id}`);
-          return res.status(404).json({
-            success: false,
-            message: "User not found. Please start the bot first with /start command.",
-            error: "USER_NOT_FOUND"
-          });
-        }
-
-        // Update user info with validated data
-        const updatedUser = await User.findOneAndUpdate(
-          { telegramId: validatedUser.id },
-          {
-            $set: {
-              first_name: validatedUser.first_name || user.first_name,
-              last_name: validatedUser.last_name || user.last_name,
-              username: validatedUser.username || user.username,
-              lastActive: new Date()
-            }
-          },
-          { new: true }
-        );
-
-        console.log(`✅ Found and authenticated user: ${updatedUser._id}`);
-
-        // Generate JWT token
-        generateToken(updatedUser._id, res);
-
-        return res.status(200).json({
-          success: true,
-          user: {
-            _id: updatedUser._id,
-            first_name: updatedUser.first_name,
-            last_name: updatedUser.last_name,
-            username: updatedUser.username,
-            telegramId: updatedUser.telegramId,
-            referralCode: updatedUser.referralCode,
-            points: updatedUser.points,
-            totalEarned: updatedUser.totalEarned,
-          },
-        });
-
-      } catch (initDataError) {
-        console.error('❌ Init data validation failed:', initDataError.message);
-        return res.status(401).json({
-          success: false,
-          message: "Invalid or tampered init data",
-          error: "INIT_DATA_VALIDATION_FAILED"
-        });
-      }
-    }
 
     // Fallback to legacy authentication (less secure)
     if (!telegramId) {
+      console.log(telegramId, "not provided")
       return res.status(400).json({
         success: false,
         message: "Telegram ID, init data, or session token is required",
