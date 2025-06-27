@@ -6,7 +6,7 @@ const setWebhook = async () => {
     const bot = new TelegramBot(token);
 
     try {
-        const webhookUrl = 'https://babyroy-rjjm.onrender.com/webhook';
+        const webhookUrl = 'https://babyroytestupdate.onrender.com/webhook';
         const result = await bot.setWebHook(webhookUrl);
         console.log('Webhook set successfully:', result);
     } catch (error) {

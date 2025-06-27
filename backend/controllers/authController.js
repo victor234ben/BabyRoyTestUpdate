@@ -159,7 +159,7 @@ const sessionBasedAuth = async (req, res) => {
   try {
     if (!sessionToken) {
       // Redirect to login with error instead of returning JSON
-      return res.redirect(`${process.env.FRONTEND_URL || 'https://babyroy-rjjm.onrender.com'}/?error=missing_session`);
+      return res.redirect(`${process.env.FRONTEND_URL || 'https://babyroytestupdate.onrender.com'}/?error=missing_session`);
     }
 
     // Get session data from store
@@ -168,7 +168,7 @@ const sessionBasedAuth = async (req, res) => {
 
     if (!sessionData) {
       // Redirect to login with error instead of returning JSON
-      return res.redirect(`${process.env.FRONTEND_URL || 'https://babyroy-rjjm.onrender.com'}/?error=invalid_session`);
+      return res.redirect(`${process.env.FRONTEND_URL || 'https://babyroytestupdate.onrender.com'}/?error=invalid_session`);
     }
 
     // Find the user in database using the userId from session
@@ -179,7 +179,7 @@ const sessionBasedAuth = async (req, res) => {
       // Try finding by telegramId as fallback
       const userByTelegram = await User.findOne({ telegramId: sessionData.telegramId });
       if (!userByTelegram) {
-        return res.redirect(`${process.env.FRONTEND_URL || 'https://babyroy-rjjm.onrender.com'}/?error=user_not_found`);
+        return res.redirect(`${process.env.FRONTEND_URL || 'https://babyroytestupdate.onrender.com'}/?error=user_not_found`);
       }
       // Use the found user
       user = userByTelegram;
@@ -211,14 +211,14 @@ const sessionBasedAuth = async (req, res) => {
     });
 
     // Redirect to dashboard with success parameter
-    const redirectUrl = `${process.env.FRONTEND_URL || 'https://babyroy-rjjm.onrender.com'}/dashboard?auth=success`;
+    const redirectUrl = `${process.env.FRONTEND_URL || 'https://babyroytestupdate.onrender.com'}/dashboard?auth=success`;
 
     console.log(`✅ [DEBUG] Redirecting to: ${redirectUrl}`);
     return res.redirect(redirectUrl);
 
   } catch (error) {
     console.error("❌ [DEBUG] Error in session-based authentication:", error);
-    return res.redirect(`${process.env.FRONTEND_URL || 'https://babyroy-rjjm.onrender.com'}/?error=auth_failed`);
+    return res.redirect(`${process.env.FRONTEND_URL || 'https://babyroytestupdate.onrender.com'}/?error=auth_failed`);
   }
 };
 

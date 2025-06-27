@@ -158,7 +158,7 @@ app.use(cookieParser())
 app.use(cors({
   origin: [
     "http://localhost:8080",
-    "https://babyroy-rjjm.onrender.com",
+    "https://babyroytestupdate.onrender.com",
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: [
@@ -250,7 +250,7 @@ bot.onText(/\/start(.*)/, async (msg, match) => {
       });
 
       // Build the mini app URL with session token
-      const miniAppUrl = `https://babyroy-rjjm.onrender.com/api/auth/verifysession?session=${sessionToken}`;
+      const miniAppUrl = `https://babyroytestupdate.onrender.com/api/auth/verifysession?session=${sessionToken}`;
 
       // Send message with mini app button - ALWAYS send this
       await bot.sendMessage(chatId, 'Tap below to launch the mini app:', {
@@ -276,7 +276,7 @@ bot.onText(/\/start(.*)/, async (msg, match) => {
 
       // Fallback message if image fails
       try {
-        const fallbackUrl = `https://babyroy-rjjm.onrender.com/api/auth/verifysession?session=${sessionToken}`;
+        const fallbackUrl = `https://babyroytestupdate.onrender.com/api/auth/verifysession?session=${sessionToken}`;
         await bot.sendMessage(chatId, `Welcome to BabyRoy! 🎉${referralCode ? '\nYou were invited by a friend! Get ready for bonus rewards!' : ''}\n\nTap below to launch the mini app:`, {
           reply_markup: {
             keyboard: [
@@ -336,7 +336,7 @@ bot.onText(/\/start(.*)/, async (msg, match) => {
       if (referralCode && userResult.isNewUser && userResult.referralApplied) {
         setTimeout(async () => {
           try {
-            const bonusUrl = `https://babyroy-rjjm.onrender.com/api/auth/verifysession?session=${sessionToken}`;
+            const bonusUrl = `https://babyroytestupdate.onrender.com/api/auth/verifysession?session=${sessionToken}`;
             await bot.sendMessage(chatId, '🎁 Referral bonus has been credited to your account!', {
               reply_markup: {
                 inline_keyboard: [
@@ -382,7 +382,7 @@ bot.onText(/\/start(.*)/, async (msg, match) => {
               {
                 text: '🚀 Open BabyRoy Mini App',
                 web_app: {
-                  url: 'https://babyroy-rjjm.onrender.com/',
+                  url: 'https://babyroytestupdate.onrender.com/',
                 },
               },
             ],
