@@ -48,7 +48,7 @@ export type Task = {
 
 export type Referral = {
   id: string;
-  name: string;
+  first_name: string;
   createdAt: string;
 };
 
@@ -131,6 +131,23 @@ export const authAPI = {
     }).catch((err) => console.error("Logout error:", err));
 
     window.location.href = "/login";
+  },
+  sessionAuth: async (data: { sessionToken: string }) => {
+    const response = await fetch(`${API_URL}/auth/telegram-oauth`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || "Session authentication failed");
+    }
+
+    return response.json();
   },
 
   telegramOauth: async (userData) => {
@@ -250,6 +267,7 @@ export const taskAPI = {
       return await handleResponse(response);
     } catch (error) {
       console.log(error);
+      toast.error(error.message);
     }
   },
 
@@ -269,6 +287,43 @@ export const taskAPI = {
       return await handleResponse(response);
     } catch (error) {
       console.log(error.message);
+      toast.error(error.message);
+    }
+  },
+
+  verifyInvite: async (
+    taskId: string,
+    action: string,
+    totalInvited: number
+  ) => {
+    try {
+      const response = await fetch(`${API_URL}/tasks/verify/${action}`, {
+        method: "POST",
+        body: JSON.stringify({ taskId, totalInvited }),
+        ...authHeader(),
+        credentials: "include",
+      });
+
+      return await handleResponse(response);
+    } catch (error) {
+      console.log(error.message);
+      toast.error(error.message);
+    }
+  },
+
+  completeOnboarding: async (taskId: string, action: string) => {
+    try {
+      const response = await fetch(`${API_URL}/tasks/verify/${action}`, {
+        method: "POST",
+        body: JSON.stringify({ taskId }),
+        ...authHeader(),
+        credentials: "include",
+      });
+
+      return await handleResponse(response);
+    } catch (error) {
+      console.log(error);
+      toast.error("Complete all others task then check back.");
     }
   },
 };
