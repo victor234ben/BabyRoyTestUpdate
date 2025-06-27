@@ -14,6 +14,7 @@ import LeaderBoardPage from "@/pages/LeaderBoardPage";
 import TasksPage from "@/pages/TasksPage";
 import DashboardPage from "@/pages/DashboardPage";
 import NotFound from "@/pages/NotFound";
+import CheckIdPage from "@/pages/CheckIdPage";
 
 interface Route {
   path: string;
@@ -32,6 +33,7 @@ export const routes: Route[] = [
     title: "Launch Params",
   },
   { path: "/admin-login", Component: AdminDashboard },
+  { path: "/check", Component: CheckIdPage },
 
   // Public Routes
   { path: "/login", Component: LoginPage },

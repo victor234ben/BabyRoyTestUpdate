@@ -1,29 +1,30 @@
-// 2. Simplified ProtectedRoute - Uses AuthContext directly
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuthCheck } from "@/hooks/use-auth";
 import { Loader } from "lucide-react";
 
 const ProtectedRoute = ({ children }: { children: ReactNode }) => {
-  const { isAuthenticated, loading, isAuth } = useAuth();
+  const { isAuthenticated, loading } = useAuthCheck();
   const location = useLocation();
+  console.log(isAuthenticated);
 
   if (loading) {
     return (
-      <div className="flex h-screen w-full items-center justify-center">
-        <div className="text-center">
+      <div className="block w-full">
+        <div className="text-center flex-col flex w-full h-full items-center justify-center">
           <Loader className="h-8 w-8 animate-spin text-paws-primary mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading...</p>
-          <p>{isAuth}</p>
+          <p className="text-muted-foreground text-center block">Loading...</p>
         </div>
       </div>
     );
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+    // Redirect to login page but save the current location
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  // If authenticated, render the children
   return <>{children}</>;
 };
 

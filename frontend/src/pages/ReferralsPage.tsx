@@ -3,9 +3,12 @@ import AppLayout from "@/components/layout/AppLayout";
 import { referralAPI, Referral, ReferralInfo } from "@/services/api";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+} from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Share, Copy, CheckCircle2 } from "lucide-react";
+import { Share, Copy, CheckCircle2} from "lucide-react";
 import { format } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -63,14 +66,14 @@ const ReferralsPage = () => {
   const handleShareCode = () => {
     if (!referralInfo?.referralCode) return;
 
-    const shareText = `Join me on BabyRoy and earn rewards! Use my referral link: https://t.me/babyroybot?start=${referralInfo.referralCode}`;
+    const shareText = `Join me on BabyRoy and earn rewards! Use my referral code: ${referralInfo.referralCode}`;
 
     if (navigator.share) {
       navigator
         .share({
           title: "BabyRoy Referral",
           text: shareText,
-          url: `https://t.me/babyroybot?start=${referralInfo.referralCode}`,
+          url: window.location.origin,
         })
         .catch((error) => {
           console.error("Error sharing:", error);
@@ -89,7 +92,7 @@ const ReferralsPage = () => {
 
   return (
     <AppLayout>
-      <div className="p-2.5 space-y-6 pt-10">
+      <div className="p-6 space-y-6 pt-10">
         <div
           className={`friends-tab-con px-4 pb-24 transition-all duration-300`}
         >
@@ -168,7 +171,7 @@ const ReferralsPage = () => {
                         </div>
                       ))}
                   </div>
-                ) : referralsList?.length === 0 ? (
+                ) : referralsList.length === 0 ? (
                   <div className="text-center py-8">
                     <Share className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-20" />
                     <h3 className="text-lg font-medium mb-1">
@@ -194,13 +197,11 @@ const ReferralsPage = () => {
                           <div className="flex items-center">
                             <Avatar>
                               <AvatarFallback className="text-white bg-[#041c31]">
-                                {referral.first_name.charAt(0).toUpperCase()}
+                                {referral.name.charAt(0).toUpperCase()}
                               </AvatarFallback>
                             </Avatar>
                             <div className="ml-4">
-                              <div className="font-medium">
-                                {referral.first_name}
-                              </div>
+                              <div className="font-medium">{referral.name}</div>
                               <div className="text-xs text-muted-foreground">
                                 Joined{" "}
                                 {format(
@@ -235,5 +236,6 @@ const ReferralsPage = () => {
     </AppLayout>
   );
 };
+
 
 export default ReferralsPage;
