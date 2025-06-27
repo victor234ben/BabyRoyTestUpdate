@@ -1,4 +1,4 @@
-// Updated AuthContext with Telegram SDK integration
+// Fixed AuthContext with proper session handling
 import {
   createContext,
   useContext,
@@ -9,14 +9,12 @@ import {
 import { authAPI, profileAPI, UserProfile } from "@/services/api";
 import { useNavigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
-import { cloudStorage, retrieveLaunchParams } from "@telegram-apps/sdk";
 
 type AuthContextType = {
   user: UserProfile | null;
   loading: boolean;
   isAuth: boolean;
   isAuthenticated: boolean;
-  sdkReady: boolean;
   login: (email: string, password: string) => Promise<void>;
   telegramOauth: (
     telegramId: string,
@@ -37,50 +35,17 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-interface AuthProviderProps {
-  children: ReactNode;
-  sdkInitialized: boolean;
-}
-
-export const AuthProvider = ({
-  children,
-  sdkInitialized,
-}: AuthProviderProps) => {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isAuth, setIsAuth] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [sdkReady, setSdkReady] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Initialize cloud storage when SDK is ready
+  // Single authentication check on app initialization
   useEffect(() => {
-    const initCloudStorage = async () => {
-      if (!sdkInitialized) return;
-
-      try {
-        if (cloudStorage.mount.isAvailable()) {
-          cloudStorage.mount();
-          console.log("✅ [DEBUG] Cloud storage initialized");
-        }
-        setSdkReady(true);
-      } catch (error) {
-        console.error("❌ [DEBUG] Failed to initialize cloud storage:", error);
-        setSdkReady(true); // Continue without cloud storage
-      }
-    };
-
-    initCloudStorage();
-  }, [sdkInitialized]);
-
-  // Authentication check - only run when SDK is ready
-  useEffect(() => {
-    if (!sdkReady) return;
-
     const checkAuth = async () => {
       try {
-        console.log("🔍 [DEBUG] Starting authentication check...");
-
         // First, check for session token in URL
         const urlParams = new URLSearchParams(window.location.search);
         const sessionToken = urlParams.get("session");
@@ -108,7 +73,13 @@ export const AuthProvider = ({
           }
 
           toast.error(errorMessage);
-          cleanUrl();
+
+          // Clean URL
+          window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname
+          );
           setLoading(false);
           return;
         }
@@ -116,17 +87,22 @@ export const AuthProvider = ({
         // Handle successful auth redirect from server
         if (authSuccess === "success") {
           console.log("✅ [DEBUG] Auth success from server redirect");
-          cleanUrl();
+
+          // Clean URL
+          window.history.replaceState(
+            {},
+            document.title,
+            window.location.pathname
+          );
 
           try {
+            // Fetch user profile since server set the cookie
             const userData = await profileAPI.getProfile();
             setUser(userData);
             setIsAuth(true);
-
-            // Store user session in Telegram Cloud Storage as backup
-            await storeUserSession(userData);
-
             toast.success("Welcome back!");
+
+            // Navigate to dashboard
             navigate("/dashboard", { replace: true });
             return;
           } catch (profileError) {
@@ -138,10 +114,14 @@ export const AuthProvider = ({
           }
         }
 
-        // Handle session token from URL
+        // Handle session token from URL (if using JSON response method)
         if (sessionToken) {
           console.log("🔍 [DEBUG] Session token found in URL:", sessionToken);
-          cleanUrl();
+
+          // Clean URL immediately to prevent loops
+          const cleanUrl = new URL(window.location.href);
+          cleanUrl.searchParams.delete("session");
+          window.history.replaceState({}, document.title, cleanUrl.toString());
 
           try {
             console.log("🔍 [DEBUG] Attempting session authentication...");
@@ -151,11 +131,9 @@ export const AuthProvider = ({
               console.log("✅ [DEBUG] Session auth successful:", data.user);
               setUser(data.user);
               setIsAuth(true);
-
-              // Store user session in Telegram Cloud Storage
-              await storeUserSession(data.user);
-
               toast.success("Welcome back!");
+
+              // Navigate to dashboard
               navigate("/dashboard", { replace: true });
               return;
             }
@@ -165,115 +143,37 @@ export const AuthProvider = ({
               sessionError
             );
             toast.error("Session expired. Please try again.");
+            // Continue to regular token validation
           }
         }
 
-        // Check for existing valid token
+        // Fall back to regular token validation
         console.log("🔍 [DEBUG] Checking existing token...");
         const isValid = await authAPI.validateToken();
 
         if (isValid) {
           console.log("✅ [DEBUG] Existing token valid, fetching profile...");
+          // Fetch user profile only if token is valid
           const userData = await profileAPI.getProfile();
           setUser(userData);
           setIsAuth(true);
-
-          // Update cloud storage
-          await storeUserSession(userData);
         } else {
           console.log("❌ [DEBUG] No valid token found");
-
-          // Try to restore from Telegram Cloud Storage as fallback
-          const cloudUser = await restoreUserSession();
-          if (cloudUser) {
-            console.log("✅ [DEBUG] Restored session from cloud storage");
-            setUser(cloudUser);
-            setIsAuth(true);
-          } else {
-            setUser(null);
-            setIsAuth(false);
-          }
+          setUser(null);
+          setIsAuth(false);
         }
       } catch (error) {
         console.error("❌ [DEBUG] Authentication error:", error);
-
-        // Try cloud storage fallback
-        const cloudUser = await restoreUserSession();
-        if (cloudUser) {
-          setUser(cloudUser);
-          setIsAuth(true);
-        } else {
-          setUser(null);
-          setIsAuth(false);
-          toast.error("Authentication check failed");
-        }
+        setUser(null);
+        setIsAuth(false);
+        toast.error("Authentication check failed");
       } finally {
         setLoading(false);
       }
     };
 
     checkAuth();
-  }, [sdkReady]);
-
-  // Helper functions
-  const cleanUrl = () => {
-    window.history.replaceState({}, document.title, window.location.pathname);
-  };
-
-  const storeUserSession = async (userData: UserProfile) => {
-    try {
-      if (cloudStorage.setItem.isAvailable()) {
-        await cloudStorage.setItem(
-          "user_session",
-          JSON.stringify({
-            user: userData,
-            timestamp: Date.now(),
-          })
-        );
-        console.log("✅ [DEBUG] User session stored in cloud storage");
-      }
-    } catch (error) {
-      console.warn(
-        "⚠️ [DEBUG] Failed to store session in cloud storage:",
-        error
-      );
-    }
-  };
-
-  const restoreUserSession = async (): Promise<UserProfile | null> => {
-    try {
-      if (cloudStorage.getItem.isAvailable()) {
-        const sessionData = await cloudStorage.getItem("user_session");
-        if (sessionData) {
-          const parsed = JSON.parse(sessionData);
-          const isRecent =
-            Date.now() - parsed.timestamp < 7 * 24 * 60 * 60 * 1000; // 7 days
-
-          if (isRecent && parsed.user) {
-            console.log("✅ [DEBUG] Session restored from cloud storage");
-            return parsed.user;
-          }
-        }
-      }
-    } catch (error) {
-      console.warn(
-        "⚠️ [DEBUG] Failed to restore session from cloud storage:",
-        error
-      );
-    }
-    return null;
-  };
-
-  const clearCloudSession = async () => {
-    try {
-      if (cloudStorage.removeItem.isAvailable()) {
-        await cloudStorage.removeItem("user_session");
-        console.log("✅ [DEBUG] Cloud session cleared");
-      }
-    } catch (error) {
-      console.warn("⚠️ [DEBUG] Failed to clear cloud session:", error);
-    }
-  };
+  }, []); // Remove location dependency to avoid re-runs
 
   const login = async (email: string, password: string) => {
     setLoading(true);
@@ -281,12 +181,9 @@ export const AuthProvider = ({
       const data = await authAPI.login({ email, password });
       setUser(data.user);
       setIsAuth(true);
-
-      // Store in cloud storage
-      await storeUserSession(data.user);
-
       toast.success("Login successful!");
 
+      // Navigate to intended page or dashboard
       const intendedPath = location.state?.from || "/dashboard";
       navigate(intendedPath, { replace: true });
     } catch (error) {
@@ -324,35 +221,25 @@ export const AuthProvider = ({
   ) => {
     setLoading(true);
     try {
-      const launchParams = retrieveLaunchParams();
-      const rawInitData = launchParams.initDataRaw;
-
       const requestData = {
         telegramId: telegramId.toString(),
         first_name: first_name || "",
         last_name: last_name || "",
         username: username || "",
-        initData: rawInitData,
       };
 
-      console.log("🔍 [DEBUG] Telegram OAuth request:", requestData);
       const data = await authAPI.telegramOauth(requestData);
 
       if (data && data.user) {
-        console.log("✅ [DEBUG] Telegram OAuth successful:", data.user);
         setUser(data.user);
         setIsAuth(true);
-
-        // Store in cloud storage
-        await storeUserSession(data.user);
-
         toast.success("Authentication successful!");
         const intendedPath = location.state?.from || "/dashboard";
         navigate(intendedPath, { replace: true });
       }
       return data;
     } catch (error) {
-      console.error("❌ [DEBUG] Telegram OAuth error:", error);
+      console.error("Telegram OAuth error:", error);
       toast.error("Authentication failed. Please try again.");
       throw error;
     } finally {
@@ -363,7 +250,9 @@ export const AuthProvider = ({
   const sessionAuth = async (sessionToken: string) => {
     setLoading(true);
     try {
-      const requestData = { sessionToken };
+      const requestData = {
+        sessionToken: sessionToken,
+      };
 
       console.log("🔍 [DEBUG] Making session auth API call...");
       const data = await authAPI.sessionAuth(requestData);
@@ -372,10 +261,6 @@ export const AuthProvider = ({
         console.log("✅ [DEBUG] Session auth API successful:", data.user);
         setUser(data.user);
         setIsAuth(true);
-
-        // Store in cloud storage
-        await storeUserSession(data.user);
-
         toast.success("Welcome back!");
         return data;
       }
@@ -388,28 +273,16 @@ export const AuthProvider = ({
     }
   };
 
-  const logout = async () => {
-    try {
-      await authAPI.logout();
-      await clearCloudSession();
-      setUser(null);
-      setIsAuth(false);
-      navigate("/login");
-      toast.info("You have been logged out.");
-    } catch (error) {
-      console.error("Logout error:", error);
-      // Force logout even if API call fails
-      await clearCloudSession();
-      setUser(null);
-      setIsAuth(false);
-      navigate("/login");
-    }
+  const logout = () => {
+    authAPI.logout();
+    setUser(null);
+    setIsAuth(false);
+    navigate("/login");
+    toast.info("You have been logged out.");
   };
 
   const updateUserData = (userData: UserProfile) => {
     setUser(userData);
-    // Update cloud storage
-    storeUserSession(userData);
   };
 
   const isAuthenticated = !!user && isAuth;
@@ -421,7 +294,6 @@ export const AuthProvider = ({
         loading,
         isAuthenticated,
         isAuth,
-        sdkReady,
         login,
         register,
         logout,

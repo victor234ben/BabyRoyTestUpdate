@@ -61,6 +61,7 @@ const App = () => {
         if (themeParams.mount.isAvailable()) {
           themeParams.mount();
         }
+        
 
         setSdkInitialized(true);
         console.log("Telegram SDK initialized successfully");
