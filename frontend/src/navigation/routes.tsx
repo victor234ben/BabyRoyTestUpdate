@@ -79,8 +79,6 @@ export const routes: Route[] = [
     ),
   },
 
-  // 404
-  { path: "*", Component: NotFound },
   {
     path: "/ton-connect",
     Component: TONConnectPage,

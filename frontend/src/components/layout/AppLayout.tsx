@@ -16,7 +16,7 @@ type MenuItem = {
 };
 
 const mainMenuItems: MenuItem[] = [
-  { id: 1, title: "Dashboard", path: "/", icon: Home },
+  { id: 1, title: "Dashboard", path: "/dashboard", icon: Home },
   { id: 3, title: "Leaderboard", path: "/leaderboard", icon: Trophy },
   { id: 2, title: "Earn", path: "/tasks", icon: Package },
   { id: 4, title: "Friends", path: "/referrals", icon: Friends },
@@ -41,7 +41,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     <div className="flex min-h-screen w-full md:max-w-[600px] lg:max-w-md mx-auto">
       <div
         className={`${
-          pathname === "/" ? "special_background" : "bg-[#041c31]"
+          pathname === "/dashboard" ? "special_background" : "bg-[#041c31]"
         } relative w-full md:max-w-[600px] lg:max-w-md mx-auto flex flex-col items-center flex-1`}
       >
         {/* Main content */}

@@ -239,10 +239,10 @@ bot.onText(/\/start(.*)/, async (msg, match) => {
       // Build the mini app URL with session token
       const miniAppUrl = `https://babyroytestupdate.onrender.com/`;
 
-      // Send message with mini app button - ALWAYS send this
+      // Send message with INLINE keyboard button - This ensures initData is available
       await bot.sendMessage(chatId, 'Tap below to launch the mini app:', {
         reply_markup: {
-          keyboard: [
+          inline_keyboard: [
             [
               {
                 text: referralCode ? '🎁 Open BabyRoy Mini App (Bonus!)' : '🚀 Open BabyRoy Mini App',
@@ -252,8 +252,6 @@ bot.onText(/\/start(.*)/, async (msg, match) => {
               },
             ],
           ],
-          resize_keyboard: true,
-          one_time_keyboard: true,
         },
       });
 
@@ -261,12 +259,12 @@ bot.onText(/\/start(.*)/, async (msg, match) => {
     } catch (error) {
       console.error("❌ Error sending welcome message:", error);
 
-      // Fallback message if image fails
+      // Fallback message if image fails - Also using inline keyboard
       try {
         const fallbackUrl = `https://babyroytestupdate.onrender.com/`;
         await bot.sendMessage(chatId, `Welcome to BabyRoy! 🎉${referralCode ? '\nYou were invited by a friend! Get ready for bonus rewards!' : ''}\n\nTap below to launch the mini app:`, {
           reply_markup: {
-            keyboard: [
+            inline_keyboard: [
               [
                 {
                   text: referralCode ? '🎁 Open BabyRoy Mini App (Bonus!)' : '🚀 Open BabyRoy Mini App',
@@ -276,8 +274,6 @@ bot.onText(/\/start(.*)/, async (msg, match) => {
                 },
               ],
             ],
-            resize_keyboard: true,
-            one_time_keyboard: true,
           },
         });
         console.log(`✅ Fallback welcome message sent to user ${userId}`);
@@ -300,8 +296,7 @@ bot.onText(/\/start(.*)/, async (msg, match) => {
 
       console.log("✅ User creation/login result:", userResult);
 
-
-      // Send referral bonus message if applicable
+      // Send referral bonus message if applicable - Already using inline keyboard
       if (referralCode && userResult.isNewUser && userResult.referralApplied) {
         setTimeout(async () => {
           try {
@@ -342,11 +337,11 @@ bot.onText(/\/start(.*)/, async (msg, match) => {
   } catch (error) {
     console.error("❌ Error in /start command processing:", error);
 
-    // If user creation fails, still try to send a basic message
+    // If user creation fails, still try to send a basic message - Using inline keyboard
     try {
       await bot.sendMessage(chatId, `Welcome to BabyRoy! 🎉\n\nTap below to launch the mini app:`, {
         reply_markup: {
-          keyboard: [
+          inline_keyboard: [
             [
               {
                 text: '🚀 Open BabyRoy Mini App',
@@ -356,8 +351,6 @@ bot.onText(/\/start(.*)/, async (msg, match) => {
               },
             ],
           ],
-          resize_keyboard: true,
-          one_time_keyboard: true,
         },
       });
     } catch (finalError) {

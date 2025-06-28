@@ -18,6 +18,7 @@ import { Toaster } from "./ui/toaster";
 import { Toaster as Sonner } from "./ui/sonner";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
+import NotFound from "@/pages/NotFound";
 
 export function App() {
   const lp = useMemo(() => retrieveLaunchParams(), []);
@@ -37,7 +38,7 @@ export function App() {
               {routes.map((route) => (
                 <Route key={route.path} {...route} />
               ))}
-              <Route path="*" element={<Navigate to="/" />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </AuthProvider>
         </BrowserRouter>
