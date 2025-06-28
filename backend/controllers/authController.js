@@ -1,10 +1,8 @@
 
-const redisClient = require('../config/redisClient.js');
 const User = require('../models/userModel.js');
 const generateToken = require('../utils/generateToken');
 const generateReferralCode = require('../utils/referralCodeGenerator');
 const jwt = require('jsonwebtoken');
-const { validate, parse } = require('@telegram-apps/init-data-node');
 
 // @desc    Register a new user
 // @route   POST /api/auth/register
@@ -198,4 +196,4 @@ const validateUser = (req, res) => {
 }
 
 
-module.exports = { registerUser, loginUser, validateUser, telegramLoginAndSignup, sessionBasedAuth };
+module.exports = { registerUser, loginUser, validateUser, telegramLoginAndSignup };
