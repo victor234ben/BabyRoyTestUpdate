@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Loader, PawPrint } from "lucide-react";
 import { toast } from "sonner";
@@ -87,6 +87,8 @@ const LoginPage = () => {
             >
               Kindly close and reopen the app. Thanks
             </button>
+            <Link to="/index">Index</Link>
+
             {error.includes("Telegram") && (
               <button
                 onClick={() => window.Telegram?.WebApp?.close()}
