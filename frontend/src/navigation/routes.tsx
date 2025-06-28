@@ -24,7 +24,7 @@ interface Route {
 }
 
 export const routes: Route[] = [
-  { path: "/", Component: IndexPage },
+  { path: "/index", Component: IndexPage },
   { path: "/init-data", Component: InitDataPage, title: "Init Data" },
   { path: "/theme-params", Component: ThemeParamsPage, title: "Theme Params" },
   {
@@ -39,7 +39,7 @@ export const routes: Route[] = [
   { path: "/login", Component: LoginPage },
   { path: "/register", Component: RegisterPage },
   {
-    path: "/index",
+    path: "/",
     Component: () => (
       <ProtectedRoute>
         <DashboardPage />
