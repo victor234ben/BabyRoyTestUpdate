@@ -1,11 +1,5 @@
 import { useMemo } from "react";
-import {
-  Navigate,
-  Route,
-  Routes,
-  HashRouter,
-  BrowserRouter,
-} from "react-router-dom";
+import { Route, Routes, BrowserRouter } from "react-router-dom";
 import {
   retrieveLaunchParams,
   useSignal,

@@ -13,7 +13,6 @@ import ReferralsPage from "@/pages/ReferralsPage";
 import LeaderBoardPage from "@/pages/LeaderBoardPage";
 import TasksPage from "@/pages/TasksPage";
 import DashboardPage from "@/pages/DashboardPage";
-import NotFound from "@/pages/NotFound";
 import CheckIdPage from "@/pages/CheckIdPage";
 
 interface Route {

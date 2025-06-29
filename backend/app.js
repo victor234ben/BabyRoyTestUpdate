@@ -120,14 +120,13 @@ app.use(
         'https://hk.tpstatic.net',
         'https://pub.tomo.inc/',
         'https://cdn.mirailabs.co',
-        // ✅ ADD THESE - Additional wallet icons
         'https://tonconnect.io',
         'https://cdn.jsdelivr.net',
         'https://avatars.githubusercontent.com'
       ],
       styleSrc: [
         "'self'",
-        "'unsafe-inline'", // ✅ ADD THIS - Required for TonConnect UI styles
+        "'unsafe-inline'", 
         'https://fonts.googleapis.com',
         'https://cdn.jsdelivr.net',
         'https://cdnjs.cloudflare.com'
@@ -157,7 +156,7 @@ app.use(
 app.use(cookieParser())
 app.use(cors({
   origin: [
-    "http://localhost:8080",
+    "http://localhost:5173",
     "https://babyroytestupdate.onrender.com",
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],

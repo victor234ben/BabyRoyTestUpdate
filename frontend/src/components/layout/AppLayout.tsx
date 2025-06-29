@@ -1,6 +1,6 @@
 import { ReactNode, useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
-import { Home, Package, Trophy, Share, User, Settings } from "lucide-react";
+import { Home, Package, Trophy } from "lucide-react";
 import Friends from "@/icons/Friends";
 import { useTonConnectUI } from "@tonconnect/ui-react";
 
@@ -26,6 +26,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const location = useLocation();
 
   const { pathname } = location;
+
+  console.log(pathname);
 
   const [tonConnectUI] = useTonConnectUI();
 

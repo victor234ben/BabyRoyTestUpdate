@@ -138,7 +138,7 @@ const createUsers = async () => {
 
     const baseTelegramId = 100000;
 
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 5; i++) {
       const user = {
         name: `User ${i + 1}`,
         first_name: `First${i + 1}`,
@@ -184,10 +184,10 @@ const deleteDemoTasks = async (req, res) => {
   }
 }
 // Run the function
-addDemoTasks();
+// addDemoTasks();
 
 
-// createUsers();
+createUsers();
 
 // deleteDemoTasks()
 

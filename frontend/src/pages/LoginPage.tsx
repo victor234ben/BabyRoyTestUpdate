@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Loader, PawPrint } from "lucide-react";
-import { toast } from "sonner";
+
 import {
   initDataRaw as _initDataRaw,
   initDataState as _initDataState,

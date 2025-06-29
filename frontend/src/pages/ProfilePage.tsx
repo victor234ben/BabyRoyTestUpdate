@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import AppLayout from '@/components/layout/AppLayout';
-import { profileAPI, UserProfile } from '@/services/api';
+import { profileAPI } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
