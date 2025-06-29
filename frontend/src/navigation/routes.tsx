@@ -14,6 +14,7 @@ import LeaderBoardPage from "@/pages/LeaderBoardPage";
 import TasksPage from "@/pages/TasksPage";
 import DashboardPage from "@/pages/DashboardPage";
 import CheckIdPage from "@/pages/CheckIdPage";
+import MaintenancePage from "@/pages/MaintenancePage";
 
 interface Route {
   path: string;
@@ -33,6 +34,7 @@ export const routes: Route[] = [
   },
   { path: "/admin-login", Component: AdminDashboard },
   { path: "/check", Component: CheckIdPage },
+  { path: "/maintain", Component: MaintenancePage },
 
   // Public Routes
   { path: "/login", Component: LoginPage },

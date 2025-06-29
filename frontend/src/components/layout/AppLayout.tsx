@@ -27,7 +27,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const { pathname } = location;
 
-  console.log(pathname);
+  const path = ["/", "/dashboard"];
 
   const [tonConnectUI] = useTonConnectUI();
 
@@ -43,7 +43,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     <div className="flex min-h-screen w-full md:max-w-[600px] lg:max-w-md mx-auto">
       <div
         className={`${
-          pathname === "/dashboard" ? "special_background" : "bg-[#041c31]"
+          path.includes(pathname) ? "special_background" : "bg-[#041c31]"
         } relative w-full md:max-w-[600px] lg:max-w-md mx-auto flex flex-col items-center flex-1`}
       >
         {/* Main content */}
