@@ -65,7 +65,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
         if (isValid) {
           console.log("✅ [DEBUG] Existing token valid, fetching profile...");
-          toast.success("token valid F")
           // Fetch user profile only if token is valid
           const userData = await profileAPI.getProfile();
           setUser(userData);
